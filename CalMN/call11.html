@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadoras de Sistemas de Ecuaciones Lineales</title>
+    <style>
+        /* Estilos generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #eee;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        /* Matrix input - CORREGIDO */
+        .matrix-container {
+            margin-bottom: 20px;
+        }
+
+        .matrix-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .matrix-size {
+            font-weight: 500;
+        }
+
+        .matrix-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .matrix-button {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .matrix-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* NUEVO: Contenedor de matriz mejorado */
+        .matrix-grid {
+            display: table;
+            border-spacing: 8px 8px;
+            margin-bottom: 16px;
+        }
+
+        .matrix-row {
+            display: table-row;
+        }
+
+        .matrix-cell-container {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .matrix-cell {
+            width: 60px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .matrix-equals {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 0 8px;
+        }
+
+        .matrix-vector-cell {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        /* Slider */
+        .slider-container {
+            margin-bottom: 16px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .slider {
+            width: 100%;
+        }
+
+        .slider-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-warning {
+            background-color: #fff7ed;
+            color: #c2410c;
+            border: 1px solid #fed7aa;
+        }
+
+        .alert-info {
+            background-color: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        /* Results table */
+        .results-container {
+            margin-top: 20px;
+            overflow-x: auto;
+            max-height: 400px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 8px 12px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .results-table th {
+            background-color: #f9fafb;
+            font-weight: 500;
+            color: #374151;
+            position: sticky;
+            top: 0;
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .results-empty {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        /* Solución final */
+        .solution-container {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 4px;
+        }
+
+        .solution-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #0369a1;
+        }
+
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .solution-item {
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .solution-variable {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #374151;
+        }
+
+        .solution-value {
+            font-family: monospace;
+            font-size: 16px;
+        }
+
+        .no-solution {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Opciones avanzadas */
+        .advanced-options {
+            margin-top: 16px;
+            padding: 16px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+        }
+
+        .advanced-options-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .advanced-options-title:hover {
+            color: #3b82f6;
+        }
+
+        .advanced-options-content {
+            display: none;
+        }
+
+        .advanced-options-content.show {
+            display: block;
+        }
+
+        .checkbox-group {
+            margin-bottom: 12px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            margin-right: 8px;
+        }
+
+        /* Vector inicial */
+        .initial-vector-container {
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        .initial-vector-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4b5563;
+        }
+
+        .initial-vector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .initial-vector-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .initial-vector-label {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #4b5563;
+        }
+
+        .initial-vector-input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .initial-vector-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .initial-vector-button {
+            padding: 6px 12px;
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .initial-vector-button:hover {
+            background-color: #e5e7eb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab {
+                flex: 1 0 50%;
+                text-align: center;
+                padding: 8px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .matrix-cell {
+                width: 50px;
+                padding: 4px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab {
+                flex: 1 0 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadoras de Sistemas de Ecuaciones Lineales</h1>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="jacobi">Jacobi</button>
+            <button class="tab" data-tab="gauss-seidel">Gauss-Seidel</button>
+            <button class="tab" data-tab="sor">SOR</button>
+            <button class="tab" data-tab="conjugate-gradient">Gradiente Conjugado</button>
+        </div>
+        
+        <!-- Método de Jacobi -->
+        <div class="tab-content active" id="jacobi-tab">
+            <div class="card">
+                <h2 class="card-title">Método de Jacobi</h2>
+                <p class="card-description">Un método iterativo que resuelve un sistema de ecuaciones lineales aproximando el vector solución en cada iteración.</p>
+                
+                <div class="matrix-container">
+                    <div class="matrix-controls">
+                        <span class="matrix-size">Tamaño del Sistema: <span id="jacobi-size">3</span>×<span id="jacobi-size-2">3</span></span>
+                        <div class="matrix-buttons">
+                            <button class="matrix-button" id="jacobi-decrease-size" title="Disminuir tamaño">-</button>
+                            <button class="matrix-button" id="jacobi-increase-size" title="Aumentar tamaño">+</button>
+                        </div>
+                    </div>
+                    
+                    <div id="jacobi-matrix-input"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="jacobi-max-iterations">Máximo de Iteraciones</label>
+                            <input type="number" id="jacobi-max-iterations" class="form-control" value="50" min="1">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="jacobi-tolerance">Tolerancia (%)</label>
+                            <input type="number" id="jacobi-tolerance" class="form-control" value="1" min="0.0001" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="advanced-options">
+                    <div class="advanced-options-title" id="jacobi-advanced-toggle">
+                        Opciones avanzadas ▼
+                    </div>
+                    <div class="advanced-options-content" id="jacobi-advanced-content">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="jacobi-reorder" checked>
+                                Reordenar filas para mejorar convergencia
+                            </label>
+                        </div>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="jacobi-scale" checked>
+                                Escalar filas para mejorar convergencia
+                            </label>
+                        </div>
+                        
+                        <!-- Vector inicial -->
+                        <div class="initial-vector-container">
+                            <div class="initial-vector-title">Vector inicial:</div>
+                            <div id="jacobi-initial-vector" class="initial-vector-grid"></div>
+                            <div class="initial-vector-buttons">
+                                <button id="jacobi-reset-vector" class="initial-vector-button">Reiniciar a ceros</button>
+                                <button id="jacobi-random-vector" class="initial-vector-button">Valores aleatorios</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="jacobi-solve" class="btn btn-block">Resolver usando Método de Jacobi</button>
+                
+                <div id="jacobi-error" class="alert alert-error" style="display: none;"></div>
+                <div id="jacobi-warning" class="alert alert-warning" style="display: none;"></div>
+                <div id="jacobi-info" class="alert alert-info" style="display: none;"></div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">Resultados</h2>
+                
+                <!-- Solución final -->
+                <div id="jacobi-solution" class="solution-container" style="display: none;">
+                    <h3 class="solution-title">Solución Final</h3>
+                    <div id="jacobi-solution-grid" class="solution-grid"></div>
+                </div>
+                
+                <div class="results-container">
+                    <div id="jacobi-results" class="results-empty">No hay iteraciones para mostrar</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Método de Gauss-Seidel -->
+        <div class="tab-content" id="gauss-seidel-tab">
+            <div class="card">
+                <h2 class="card-title">Método de Gauss-Seidel</h2>
+                <p class="card-description">Un método iterativo que utiliza los valores más recientemente calculados en cada iteración, convergiendo típicamente más rápido que Jacobi.</p>
+                
+                <div class="matrix-container">
+                    <div class="matrix-controls">
+                        <span class="matrix-size">Tamaño del Sistema: <span id="gauss-seidel-size">3</span>×<span id="gauss-seidel-size-2">3</span></span>
+                        <div class="matrix-buttons">
+                            <button class="matrix-button" id="gauss-seidel-decrease-size" title="Disminuir tamaño">-</button>
+                            <button class="matrix-button" id="gauss-seidel-increase-size" title="Aumentar tamaño">+</button>
+                        </div>
+                    </div>
+                    
+                    <div id="gauss-seidel-matrix-input"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="gauss-seidel-max-iterations">Máximo de Iteraciones</label>
+                            <input type="number" id="gauss-seidel-max-iterations" class="form-control" value="50" min="1">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="gauss-seidel-tolerance">Tolerancia (%)</label>
+                            <input type="number" id="gauss-seidel-tolerance" class="form-control" value="1" min="0.0001" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="advanced-options">
+                    <div class="advanced-options-title" id="gauss-seidel-advanced-toggle">
+                        Opciones avanzadas ▼
+                    </div>
+                    <div class="advanced-options-content" id="gauss-seidel-advanced-content">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="gauss-seidel-reorder" checked>
+                                Reordenar filas para mejorar convergencia
+                            </label>
+                        </div>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="gauss-seidel-scale" checked>
+                                Escalar filas para mejorar convergencia
+                            </label>
+                        </div>
+                        
+                        <!-- Vector inicial -->
+                        <div class="initial-vector-container">
+                            <div class="initial-vector-title">Vector inicial:</div>
+                            <div id="gauss-seidel-initial-vector" class="initial-vector-grid"></div>
+                            <div class="initial-vector-buttons">
+                                <button id="gauss-seidel-reset-vector" class="initial-vector-button">Reiniciar a ceros</button>
+                                <button id="gauss-seidel-random-vector" class="initial-vector-button">Valores aleatorios</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="gauss-seidel-solve" class="btn btn-block">Resolver usando Método de Gauss-Seidel</button>
+                
+                <div id="gauss-seidel-error" class="alert alert-error" style="display: none;"></div>
+                <div id="gauss-seidel-warning" class="alert alert-warning" style="display: none;"></div>
+                <div id="gauss-seidel-info" class="alert alert-info" style="display: none;"></div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">Resultados</h2>
+                
+                <!-- Solución final -->
+                <div id="gauss-seidel-solution" class="solution-container" style="display: none;">
+                    <h3 class="solution-title">Solución Final</h3>
+                    <div id="gauss-seidel-solution-grid" class="solution-grid"></div>
+                </div>
+                
+                <div class="results-container">
+                    <div id="gauss-seidel-results" class="results-empty">No hay iteraciones para mostrar</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Método SOR -->
+        <div class="tab-content" id="sor-tab">
+            <div class="card">
+                <h2 class="card-title">Método SOR (Successive Over-Relaxation)</h2>
+                <p class="card-description">Una variante del método de Gauss-Seidel que utiliza un factor de relajación para acelerar la convergencia.</p>
+                
+                <div class="matrix-container">
+                    <div class="matrix-controls">
+                        <span class="matrix-size">Tamaño del Sistema: <span id="sor-size">3</span>×<span id="sor-size-2">3</span></span>
+                        <div class="matrix-buttons">
+                            <button class="matrix-button" id="sor-decrease-size" title="Disminuir tamaño">-</button>
+                            <button class="matrix-button" id="sor-increase-size" title="Aumentar tamaño">+</button>
+                        </div>
+                    </div>
+                    
+                    <div id="sor-matrix-input"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="sor-max-iterations">Máximo de Iteraciones</label>
+                            <input type="number" id="sor-max-iterations" class="form-control" value="50" min="1">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="sor-tolerance">Tolerancia (%)</label>
+                            <input type="number" id="sor-tolerance" class="form-control" value="1" min="0.0001" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="sor-omega">Factor de Relajación (ω): <span id="sor-omega-value">1.5</span></label>
+                    <input type="range" id="sor-omega" class="form-control" min="0.1" max="1.9" value="1.5" step="0.1">
+                    <p class="slider-info">Valores entre 1 y 2 suelen dar mejores resultados. El valor óptimo depende del sistema.</p>
+                </div>
+                
+                <div class="advanced-options">
+                    <div class="advanced-options-title" id="sor-advanced-toggle">
+                        Opciones avanzadas ▼
+                    </div>
+                    <div class="advanced-options-content" id="sor-advanced-content">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="sor-reorder" checked>
+                                Reordenar filas para mejorar convergencia
+                            </label>
+                        </div>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="sor-scale" checked>
+                                Escalar filas para mejorar convergencia
+                            </label>
+                        </div>
+                        
+                        <!-- Vector inicial -->
+                        <div class="initial-vector-container">
+                            <div class="initial-vector-title">Vector inicial:</div>
+                            <div id="sor-initial-vector" class="initial-vector-grid"></div>
+                            <div class="initial-vector-buttons">
+                                <button id="sor-reset-vector" class="initial-vector-button">Reiniciar a ceros</button>
+                                <button id="sor-random-vector" class="initial-vector-button">Valores aleatorios</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="sor-solve" class="btn btn-block">Resolver usando Método SOR</button>
+                
+                <div id="sor-error" class="alert alert-error" style="display: none;"></div>
+                <div id="sor-warning" class="alert alert-warning" style="display: none;"></div>
+                <div id="sor-info" class="alert alert-info" style="display: none;"></div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">Resultados</h2>
+                
+                <!-- Solución final -->
+                <div id="sor-solution" class="solution-container" style="display: none;">
+                    <h3 class="solution-title">Solución Final</h3>
+                    <div id="sor-solution-grid" class="solution-grid"></div>
+                </div>
+                
+                <div class="results-container">
+                    <div id="sor-results" class="results-empty">No hay iteraciones para mostrar</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Método del Gradiente Conjugado -->
+        <div class="tab-content" id="conjugate-gradient-tab">
+            <div class="card">
+                <h2 class="card-title">Método del Gradiente Conjugado</h2>
+                <p class="card-description">Un método iterativo eficiente para resolver sistemas de ecuaciones lineales con matrices simétricas y definidas positivas.</p>
+                
+                <div class="matrix-container">
+                    <div class="matrix-controls">
+                        <span class="matrix-size">Tamaño del Sistema: <span id="conjugate-gradient-size">3</span>×<span id="conjugate-gradient-size-2">3</span></span>
+                        <div class="matrix-buttons">
+                            <button class="matrix-button" id="conjugate-gradient-decrease-size" title="Disminuir tamaño">-</button>
+                            <button class="matrix-button" id="conjugate-gradient-increase-size" title="Aumentar tamaño">+</button>
+                        </div>
+                    </div>
+                    
+                    <div id="conjugate-gradient-matrix-input"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="conjugate-gradient-max-iterations">Máximo de Iteraciones</label>
+                            <input type="number" id="conjugate-gradient-max-iterations" class="form-control" value="50" min="1">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label" for="conjugate-gradient-tolerance">Tolerancia (%)</label>
+                            <input type="number" id="conjugate-gradient-tolerance" class="form-control" value="1" min="0.0001" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="advanced-options">
+                    <div class="advanced-options-title" id="conjugate-gradient-advanced-toggle">
+                        Opciones avanzadas ▼
+                    </div>
+                    <div class="advanced-options-content" id="conjugate-gradient-advanced-content">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="conjugate-gradient-use-ata" checked>
+                                Convertir a matriz simétrica y definida positiva (A^T*A)
+                            </label>
+                        </div>
+                        
+                        <!-- Vector inicial -->
+                        <div class="initial-vector-container">
+                            <div class="initial-vector-title">Vector inicial:</div>
+                            <div id="conjugate-gradient-initial-vector" class="initial-vector-grid"></div>
+                            <div class="initial-vector-buttons">
+                                <button id="conjugate-gradient-reset-vector" class="initial-vector-button">Reiniciar a ceros</button>
+                                <button id="conjugate-gradient-random-vector" class="initial-vector-button">Valores aleatorios</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="conjugate-gradient-solve" class="btn btn-block">Resolver usando Método del Gradiente Conjugado</button>
+                
+                <div id="conjugate-gradient-error" class="alert alert-error" style="display: none;"></div>
+                <div id="conjugate-gradient-warning" class="alert alert-warning" style="display: none;"></div>
+                <div id="conjugate-gradient-info" class="alert alert-info" style="display: none;"></div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">Resultados</h2>
+                
+                <!-- Solución final -->
+                <div id="conjugate-gradient-solution" class="solution-container" style="display: none;">
+                    <h3 class="solution-title">Solución Final</h3>
+                    <div id="conjugate-gradient-solution-grid" class="solution-grid"></div>
+                </div>
+                
+                <div class="results-container">
+                    <div id="conjugate-gradient-results" class="results-empty">No hay iteraciones para mostrar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funciones de utilidad
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+        function createMatrix(size) {
+            const matrix = [];
+            for (let i = 0; i < size; i++) {
+                matrix[i] = [];
+                for (let j = 0; j < size; j++) {
+                    // Inicializar con matriz de identidad con diagonal 4 y -1 en adyacentes
+                    matrix[i][j] = i === j ? 4 : (Math.abs(i - j) === 1 ? -1 : 0);
+                }
+            }
+            return matrix;
+        }
+
+        function createVector(size) {
+            const vector = [];
+            for (let i = 0; i < size; i++) {
+                // Inicializar con valores simples
+                vector[i] = i === 0 || i === size - 1 ? 5 : 0;
+            }
+            return vector;
+        }
+
+        // Estado global
+        const state = {
+            activeTab: 'jacobi',
+            sizes: {
+                'jacobi': 3,
+                'gauss-seidel': 3,
+                'sor': 3,
+                'conjugate-gradient': 3
+            },
+            matrices: {
+                'jacobi': createMatrix(3),
+                'gauss-seidel': createMatrix(3),
+                'sor': createMatrix(3),
+                'conjugate-gradient': createMatrix(3)
+            },
+            vectors: {
+                'jacobi': createVector(3),
+                'gauss-seidel': createVector(3),
+                'sor': createVector(3),
+                'conjugate-gradient': createVector(3)
+            },
+            initialVectors: {
+                'jacobi': Array(3).fill(0),
+                'gauss-seidel': Array(3).fill(0),
+                'sor': Array(3).fill(0),
+                'conjugate-gradient': Array(3).fill(0)
+            },
+            options: {
+                'jacobi': {
+                    maxIterations: 50,
+                    tolerance: 1,
+                    reorder: true,
+                    scale: true
+                },
+                'gauss-seidel': {
+                    maxIterations: 50,
+                    tolerance: 1,
+                    reorder: true,
+                    scale: true
+                },
+                'sor': {
+                    maxIterations: 50,
+                    tolerance: 1,
+                    omega: 1.5,
+                    reorder: true,
+                    scale: true
+                },
+                'conjugate-gradient': {
+                    maxIterations: 50,
+                    tolerance: 1,
+                    useAtA: true
+                }
+            }
+        };
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar pestañas
+            initTabs();
+            
+            // Inicializar matrices
+            initMatrices();
+            
+            // Inicializar vectores iniciales
+            initInitialVectors();
+            
+            // Inicializar controles de tamaño
+            initSizeControls();
+            
+            // Inicializar opciones avanzadas
+            initAdvancedOptions();
+            
+            // Inicializar botones de solución
+            initSolveButtons();
+            
+            // Inicializar control de omega para SOR
+            initOmegaControl();
+        });
+
+        // Inicializar pestañas
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Actualizar pestaña activa
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Mostrar contenido de pestaña
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabId + '-tab').classList.add('active');
+                    
+                    // Actualizar estado
+                    state.activeTab = tabId;
+                });
+            });
+        }
+
+        // Inicializar matrices
+        function initMatrices() {
+            const methods = ['jacobi', 'gauss-seidel', 'sor', 'conjugate-gradient'];
+            
+            methods.forEach(method => {
+                renderMatrix(method);
+            });
+        }
+
+        // Renderizar matriz
+        function renderMatrix(method) {
+            const size = state.sizes[method];
+            const matrix = state.matrices[method];
+            const vector = state.vectors[method];
+            const container = document.getElementById(`${method}-matrix-input`);
+            
+            // Limpiar contenedor
+            container.innerHTML = '';
+            
+            // Crear tabla para matriz
+            const table = document.createElement('table');
+            table.className = 'matrix-grid';
+            
+            for (let i = 0; i < size; i++) {
+                const row = document.createElement('tr');
+                row.className = 'matrix-row';
+                
+                // Columnas de la matriz A
+                for (let j = 0; j < size; j++) {
+                    const cell = document.createElement('td');
+                    cell.className = 'matrix-cell-container';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.className = 'matrix-cell';
+                    input.value = matrix[i][j];
+                    input.dataset.row = i;
+                    input.dataset.col = j;
+                    input.addEventListener('input', function() {
+                        const value = parseFloat(this.value) || 0;
+                        const row = parseInt(this.dataset.row);
+                        const col = parseInt(this.dataset.col);
+                        
+                        state.matrices[method][row][col] = value;
+                    });
+                    
+                    cell.appendChild(input);
+                    row.appendChild(cell);
+                }
+                
+                // Signo igual
+                const equalsCell = document.createElement('td');
+                equalsCell.className = 'matrix-equals';
+                equalsCell.textContent = '=';
+                row.appendChild(equalsCell);
+                
+                // Vector b
+                const vectorCell = document.createElement('td');
+                vectorCell.className = 'matrix-vector-cell';
+                
+                const vectorInput = document.createElement('input');
+                vectorInput.type = 'number';
+                vectorInput.className = 'matrix-cell';
+                vectorInput.value = vector[i];
+                vectorInput.dataset.row = i;
+                vectorInput.addEventListener('input', function() {
+                    const value = parseFloat(this.value) || 0;
+                    const row = parseInt(this.dataset.row);
+                    
+                    state.vectors[method][row] = value;
+                });
+                
+                vectorCell.appendChild(vectorInput);
+                row.appendChild(vectorCell);
+                
+                table.appendChild(row);
+            }
+            
+            container.appendChild(table);
+        }
+
+        // Inicializar vectores iniciales
+        function initInitialVectors() {
+            const methods = ['jacobi', 'gauss-seidel', 'sor', 'conjugate-gradient'];
+            
+            methods.forEach(method => {
+                renderInitialVector(method);
+                
+                // Botones de reinicio y aleatorio
+                document.getElementById(`${method}-reset-vector`).addEventListener('click', function() {
+                    state.initialVectors[method] = Array(state.sizes[method]).fill(0);
+                    renderInitialVector(method);
+                });
+                
+                document.getElementById(`${method}-random-vector`).addEventListener('click', function() {
+                    state.initialVectors[method] = Array(state.sizes[method]).fill(0).map(() => Math.random() * 10 - 5);
+                    renderInitialVector(method);
+                });
+            });
+        }
+
+        // Renderizar vector inicial
+        function renderInitialVector(method) {
+            const size = state.sizes[method];
+            const vector = state.initialVectors[method];
+            const container = document.getElementById(`${method}-initial-vector`);
+            
+            // Limpiar contenedor
+            container.innerHTML = '';
+            
+            // Crear elementos para cada componente del vector
+            for (let i = 0; i < size; i++) {
+                const item = document.createElement('div');
+                item.className = 'initial-vector-item';
+                
+                const label = document.createElement('label');
+                label.className = 'initial-vector-label';
+                label.innerHTML = `x<sub>${i+1}</sub>`;
+                
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.className = 'initial-vector-input';
+                input.value = vector[i];
+                input.dataset.index = i;
+                input.addEventListener('input', function() {
+                    const value = parseFloat(this.value) || 0;
+                    const index = parseInt(this.dataset.index);
+                    
+                    state.initialVectors[method][index] = value;
+                });
+                
+                item.appendChild(label);
+                item.appendChild(input);
+                container.appendChild(item);
+            }
+        }
+
+        // Inicializar controles de tamaño
+        function initSizeControls() {
+            const methods = ['jacobi', 'gauss-seidel', 'sor', 'conjugate-gradient'];
+            
+            methods.forEach(method => {
+                // Botón de disminuir tamaño
+                document.getElementById(`${method}-decrease-size`).addEventListener('click', function() {
+                    if (state.sizes[method] > 2) {
+                        state.sizes[method]--;
+                        updateSize(method);
+                    }
+                });
+                
+                // Botón de aumentar tamaño
+                document.getElementById(`${method}-increase-size`).addEventListener('click', function() {
+                    if (state.sizes[method] < 10) {
+                        state.sizes[method]++;
+                        updateSize(method);
+                    }
+                });
+            });
+        }
+
+        // Actualizar tamaño de matriz
+        function updateSize(method) {
+            const size = state.sizes[method];
+            
+            // Actualizar etiquetas de tamaño
+            document.getElementById(`${method}-size`).textContent = size;
+            document.getElementById(`${method}-size-2`).textContent = size;
+            
+            // Crear nueva matriz y vector
+            state.matrices[method] = createMatrix(size);
+            state.vectors[method] = createVector(size);
+            state.initialVectors[method] = Array(size).fill(0);
+            
+            // Renderizar matriz y vector inicial
+            renderMatrix(method);
+            renderInitialVector(method);
+        }
+
+        // Inicializar opciones avanzadas
+        function initAdvancedOptions() {
+            const methods = ['jacobi', 'gauss-seidel', 'sor', 'conjugate-gradient'];
+            
+            methods.forEach(method => {
+                // Toggle de opciones avanzadas
+                document.getElementById(`${method}-advanced-toggle`).addEventListener('click', function() {
+                    const content = document.getElementById(`${method}-advanced-content`);
+                    content.classList.toggle('show');
+                    this.textContent = content.classList.contains('show') ? 'Opciones avanzadas ▲' : 'Opciones avanzadas ▼';
+                });
+                
+                // Checkbox de reordenamiento
+                if (method !== 'conjugate-gradient') {
+                    document.getElementById(`${method}-reorder`).addEventListener('change', function() {
+                        state.options[method].reorder = this.checked;
+                    });
+                    
+                    // Checkbox de escalado
+                    document.getElementById(`${method}-scale`).addEventListener('change', function() {
+                        state.options[method].scale = this.checked;
+                    });
+                } else {
+                    // Checkbox de uso de A^T*A
+                    document.getElementById(`${method}-use-ata`).addEventListener('change', function() {
+                        state.options[method].useAtA = this.checked;
+                    });
+                }
+            });
+        }
+
+        // Inicializar botones de solución
+        function initSolveButtons() {
+            document.getElementById('jacobi-solve').addEventListener('click', function() {
+                solveJacobi();
+            });
+            
+            document.getElementById('gauss-seidel-solve').addEventListener('click', function() {
+                solveGaussSeidel();
+            });
+            
+            document.getElementById('sor-solve').addEventListener('click', function() {
+                solveSOR();
+            });
+            
+            document.getElementById('conjugate-gradient-solve').addEventListener('click', function() {
+                solveConjugateGradient();
+            });
+        }
+
+        // Inicializar control de omega para SOR
+        function initOmegaControl() {
+            const omegaSlider = document.getElementById('sor-omega');
+            const omegaValue = document.getElementById('sor-omega-value');
+            
+            omegaSlider.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                omegaValue.textContent = value.toFixed(1);
+                state.options.sor.omega = value;
+            });
+        }
+
+        // Actualizar opciones desde controles
+        function updateOptions(method) {
+            if (method === 'conjugate-gradient') {
+                state.options[method].maxIterations = parseInt(document.getElementById(`${method}-max-iterations`).value) || 50;
+                state.options[method].tolerance = parseFloat(document.getElementById(`${method}-tolerance`).value) || 1;
+            } else {
+                state.options[method].maxIterations = parseInt(document.getElementById(`${method}-max-iterations`).value) || 50;
+                state.options[method].tolerance = parseFloat(document.getElementById(`${method}-tolerance`).value) || 1;
+                
+                if (method === 'sor') {
+                    state.options[method].omega = parseFloat(document.getElementById('sor-omega').value) || 1.5;
+                }
+            }
+        }
+
+        // Mostrar/ocultar alertas
+        function showAlert(method, type, message) {
+            const alert = document.getElementById(`${method}-${type}`);
+            
+            if (message) {
+                alert.textContent = message;
+                alert.style.display = 'block';
+            } else {
+                alert.style.display = 'none';
+            }
+        }
+
+        // Limpiar alertas
+        function clearAlerts(method) {
+            showAlert(method, 'error', null);
+            showAlert(method, 'warning', null);
+            showAlert(method, 'info', null);
+        }
+
+        // Mostrar solución
+        function showSolution(method, solution) {
+            const container = document.getElementById(`${method}-solution`);
+            const grid = document.getElementById(`${method}-solution-grid`);
+            
+            if (solution) {
+                // Limpiar grid
+                grid.innerHTML = '';
+                
+                // Crear elementos para cada variable
+                for (let i = 0; i < solution.length; i++) {
+                    const item = document.createElement('div');
+                    item.className = 'solution-item';
+                    
+                    const variable = document.createElement('div');
+                    variable.className = 'solution-variable';
+                    variable.innerHTML = `x<sub>${i+1}</sub>`;
+                    
+                    const value = document.createElement('div');
+                    value.className = 'solution-value';
+                    value.textContent = solution[i].toFixed(6);
+                    
+                    item.appendChild(variable);
+                    item.appendChild(value);
+                    grid.appendChild(item);
+                }
+                
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        // Mostrar resultados
+        function showResults(method, iterations) {
+            const container = document.getElementById(`${method}-results`);
+            
+            if (iterations && iterations.length > 0) {
+                // Crear tabla
+                const table = document.createElement('table');
+                table.className = 'results-table';
+                
+                // Crear encabezado
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                
+                const iterHeader = document.createElement('th');
+                iterHeader.textContent = 'Iteración';
+                headerRow.appendChild(iterHeader);
+                
+                for (let i = 0; i < iterations[0].x.length; i++) {
+                    const header = document.createElement('th');
+                    header.innerHTML = `x<sub>${i+1}</sub>`;
+                    headerRow.appendChild(header);
+                }
+                
+                const errorHeader = document.createElement('th');
+                errorHeader.textContent = 'Error (%)';
+                headerRow.appendChild(errorHeader);
+                
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+                
+                // Crear cuerpo
+                const tbody = document.createElement('tbody');
+                
+                iterations.forEach((iter, index) => {
+                    const row = document.createElement('tr');
+                    
+                    const iterCell = document.createElement('td');
+                    iterCell.textContent = iter.iteration;
+                    row.appendChild(iterCell);
+                    
+                    iter.x.forEach(val => {
+                        const cell = document.createElement('td');
+                        cell.textContent = val.toFixed(6);
+                        row.appendChild(cell);
+                    });
+                    
+                    const errorCell = document.createElement('td');
+                    errorCell.textContent = iter.error.toFixed(6);
+                    row.appendChild(errorCell);
+                    
+                    tbody.appendChild(row);
+                });
+                
+                table.appendChild(tbody);
+                
+                // Limpiar contenedor y agregar tabla
+                container.innerHTML = '';
+                container.appendChild(table);
+            } else {
+                container.innerHTML = '<div class="results-empty">No hay iteraciones para mostrar</div>';
+            }
+        }
+
+        // Verificar si la matriz es diagonalmente dominante
+        function isDiagonallyDominant(matrix) {
+            const n = matrix.length;
+            
+            for (let i = 0; i < n; i++) {
+                let diagonalValue = Math.abs(matrix[i][i]);
+                let rowSum = 0;
+                
+                for (let j = 0; j < n; j++) {
+                    if (j !== i) {
+                        rowSum += Math.abs(matrix[i][j]);
+                    }
+                }
+                
+                if (diagonalValue <= rowSum) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // Reordenar matriz para mejorar convergencia
+        function reorderMatrix(matrix, vector) {
+            const n = matrix.length;
+            const newMatrix = JSON.parse(JSON.stringify(matrix));
+            const newVector = [...vector];
+            
+            // Intentar hacer la matriz diagonalmente dominante reordenando filas
+            for (let i = 0; i < n; i++) {
+                let maxIndex = i;
+                let maxRatio = 0;
+                
+                for (let j = i; j < n; j++) {
+                    const diagonalValue = Math.abs(newMatrix[j][i]);
+                    let rowSum = 0;
+                    
+                    for (let k = 0; k < n; k++) {
+                        if (k !== i) {
+                            rowSum += Math.abs(newMatrix[j][k]);
+                        }
+                    }
+                    
+                    const ratio = rowSum === 0 ? Infinity : diagonalValue / rowSum;
+                    
+                    if (ratio > maxRatio) {
+                        maxRatio = ratio;
+                        maxIndex = j;
+                    }
+                }
+                
+                // Intercambiar filas
+                if (maxIndex !== i) {
+                    [newMatrix[i], newMatrix[maxIndex]] = [newMatrix[maxIndex], newMatrix[i]];
+                    [newVector[i], newVector[maxIndex]] = [newVector[maxIndex], newVector[i]];
+                }
+            }
+            
+            return { matrix: newMatrix, vector: newVector };
+        }
+
+        // Escalar matriz para mejorar convergencia
+        function scaleMatrix(matrix, vector) {
+            const n = matrix.length;
+            const newMatrix = JSON.parse(JSON.stringify(matrix));
+            const newVector = [...vector];
+            
+            for (let i = 0; i < n; i++) {
+                const diagonalValue = Math.abs(newMatrix[i][i]);
+                
+                if (diagonalValue !== 0) {
+                    for (let j = 0; j < n; j++) {
+                        newMatrix[i][j] /= diagonalValue;
+                    }
+                    newVector[i] /= diagonalValue;
+                }
+            }
+            
+            return { matrix: newMatrix, vector: newVector };
+        }
+
+        // Método de Jacobi
+        function solveJacobi() {
+            try {
+                // Actualizar opciones
+                updateOptions('jacobi');
+                
+                // Limpiar alertas
+                clearAlerts('jacobi');
+                
+                const size = state.sizes.jacobi;
+                const matrix = state.matrices.jacobi;
+                const vector = state.vectors.jacobi;
+                const initialVector = state.initialVectors.jacobi;
+                const options = state.options.jacobi;
+                
+                // Verificar elementos diagonales no nulos
+                for (let i = 0; i < size; i++) {
+                    if (matrix[i][i] === 0) {
+                        showAlert('jacobi', 'error', 'La matriz tiene un elemento diagonal igual a cero. El método de Jacobi no puede continuar.');
+                        return;
+                    }
+                }
+                
+                // Verificar si la matriz es diagonalmente dominante
+                if (!isDiagonallyDominant(matrix)) {
+                    showAlert('jacobi', 'warning', 'La matriz no es diagonalmente dominante. La convergencia no está garantizada.');
+                }
+                
+                // Copiar matriz y vector para no modificar los originales
+                let A = JSON.parse(JSON.stringify(matrix));
+                let b = [...vector];
+                
+                // Aplicar reordenamiento si está habilitado
+                if (options.reorder) {
+                    const reordered = reorderMatrix(A, b);
+                    A = reordered.matrix;
+                    b = reordered.vector;
+                    
+                    if (isDiagonallyDominant(A)) {
+                        showAlert('jacobi', 'info', 'La matriz ha sido reordenada para mejorar la convergencia.');
+                    }
+                }
+                
+                // Aplicar escalado si está habilitado
+                if (options.scale) {
+                    const scaled = scaleMatrix(A, b);
+                    A = scaled.matrix;
+                    b = scaled.vector;
+                    
+                    showAlert('jacobi', 'info', document.getElementById('jacobi-info').textContent + ' La matriz ha sido escalada para mejorar la convergencia.');
+                }
+                
+                // Inicializar vector solución
+                let x = [...initialVector];
+                
+                // Iteraciones
+                const iterations = [];
+                let converged = false;
+                let iter = 0;
+                
+                while (iter < options.maxIterations && !converged) {
+                    const xNew = Array(size).fill(0);
+                    
+                    // Calcular nueva aproximación
+                    for (let i = 0; i < size; i++) {
+                        let sum = 0;
+                        for (let j = 0; j < size; j++) {
+                            if (j !== i) {
+                                sum += A[i][j] * x[j];
+                            }
+                        }
+                        xNew[i] = (b[i] - sum) / A[i][i];
+                    }
+                    
+                    // Calcular error relativo
+                    let maxError = 0;
+                    for (let i = 0; i < size; i++) {
+                        const error = Math.abs(xNew[i] - x[i]) / (Math.abs(xNew[i]) || 1);
+                        maxError = Math.max(maxError, error);
+                    }
+                    
+                    // Guardar iteración
+                    iterations.push({
+                        iteration: iter + 1,
+                        x: [...xNew],
+                        error: maxError * 100 // Convertir a porcentaje
+                    });
+                    
+                    // Verificar convergencia
+                    if (maxError * 100 < options.tolerance) {
+                        converged = true;
+                    }
+                    
+                    // Actualizar x
+                    x = [...xNew];
+                    iter++;
+                }
+                
+                // Mostrar resultados
+                showResults('jacobi', iterations);
+                showSolution('jacobi', x);
+                
+                // Mostrar mensaje si no convergió
+                if (!converged) {
+                    showAlert('jacobi', 'warning', 'El método no convergió en el número máximo de iteraciones.');
+                }
+            } catch (error) {
+                showAlert('jacobi', 'error', 'Error al resolver: ' + error.message);
+            }
+        }
+
+        // Método de Gauss-Seidel
+        function solveGaussSeidel() {
+            try {
+                // Actualizar opciones
+                updateOptions('gauss-seidel');
+                
+                // Limpiar alertas
+                clearAlerts('gauss-seidel');
+                
+                const size = state.sizes['gauss-seidel'];
+                const matrix = state.matrices['gauss-seidel'];
+                const vector = state.vectors['gauss-seidel'];
+                const initialVector = state.initialVectors['gauss-seidel'];
+                const options = state.options['gauss-seidel'];
+                
+                // Verificar elementos diagonales no nulos
+                for (let i = 0; i < size; i++) {
+                    if (matrix[i][i] === 0) {
+                        showAlert('gauss-seidel', 'error', 'La matriz tiene un elemento diagonal igual a cero. El método de Gauss-Seidel no puede continuar.');
+                        return;
+                    }
+                }
+                
+                // Verificar si la matriz es diagonalmente dominante
+                if (!isDiagonallyDominant(matrix)) {
+                    showAlert('gauss-seidel', 'warning', 'La matriz no es diagonalmente dominante. La convergencia no está garantizada.');
+                }
+                
+                // Copiar matriz y vector para no modificar los originales
+                let A = JSON.parse(JSON.stringify(matrix));
+                let b = [...vector];
+                
+                // Aplicar reordenamiento si está habilitado
+                if (options.reorder) {
+                    const reordered = reorderMatrix(A, b);
+                    A = reordered.matrix;
+                    b = reordered.vector;
+                    
+                    if (isDiagonallyDominant(A)) {
+                        showAlert('gauss-seidel', 'info', 'La matriz ha sido reordenada para mejorar la convergencia.');
+                    }
+                }
+                
+                // Aplicar escalado si está habilitado
+                if (options.scale) {
+                    const scaled = scaleMatrix(A, b);
+                    A = scaled.matrix;
+                    b = scaled.vector;
+                    
+                    showAlert('gauss-seidel', 'info', document.getElementById('gauss-seidel-info').textContent + ' La matriz ha sido escalada para mejorar la convergencia.');
+                }
+                
+                // Inicializar vector solución
+                let x = [...initialVector];
+                
+                // Iteraciones
+                const iterations = [];
+                let converged = false;
+                let iter = 0;
+                
+                while (iter < options.maxIterations && !converged) {
+                    const xOld = [...x];
+                    
+                    // Calcular nueva aproximación
+                    for (let i = 0; i < size; i++) {
+                        let sum1 = 0; // Suma de términos con índices menores a i
+                        let sum2 = 0; // Suma de términos con índices mayores a i
+                        
+                        for (let j = 0; j < i; j++) {
+                            sum1 += A[i][j] * x[j];
+                        }
+                        
+                        for (let j = i + 1; j < size; j++) {
+                            sum2 += A[i][j] * xOld[j];
+                        }
+                        
+                        x[i] = (b[i] - sum1 - sum2) / A[i][i];
+                    }
+                    
+                    // Calcular error relativo
+                    let maxError = 0;
+                    for (let i = 0; i < size; i++) {
+                        const error = Math.abs(x[i] - xOld[i]) / (Math.abs(x[i]) || 1);
+                        maxError = Math.max(maxError, error);
+                    }
+                    
+                    // Guardar iteración
+                    iterations.push({
+                        iteration: iter + 1,
+                        x: [...x],
+                        error: maxError * 100 // Convertir a porcentaje
+                    });
+                    
+                    // Verificar convergencia
+                    if (maxError * 100 < options.tolerance) {
+                        converged = true;
+                    }
+                    
+                    iter++;
+                }
+                
+                // Mostrar resultados
+                showResults('gauss-seidel', iterations);
+                showSolution('gauss-seidel', x);
+                
+                // Mostrar mensaje si no convergió
+                if (!converged) {
+                    showAlert('gauss-seidel', 'warning', 'El método no convergió en el número máximo de iteraciones.');
+                }
+            } catch (error) {
+                showAlert('gauss-seidel', 'error', 'Error al resolver: ' + error.message);
+            }
+        }
+
+        // Método SOR
+        function solveSOR() {
+            try {
+                // Actualizar opciones
+                updateOptions('sor');
+                
+                // Limpiar alertas
+                clearAlerts('sor');
+                
+                const size = state.sizes.sor;
+                const matrix = state.matrices.sor;
+                const vector = state.vectors.sor;
+                const initialVector = state.initialVectors.sor;
+                const options = state.options.sor;
+                
+                // Verificar elementos diagonales no nulos
+                for (let i = 0; i < size; i++) {
+                    if (matrix[i][i] === 0) {
+                        showAlert('sor', 'error', 'La matriz tiene un elemento diagonal igual a cero. El método SOR no puede continuar.');
+                        return;
+                    }
+                }
+                
+                // Verificar si la matriz es diagonalmente dominante
+                if (!isDiagonallyDominant(matrix)) {
+                    showAlert('sor', 'warning', 'La matriz no es diagonalmente dominante. La convergencia no está garantizada.');
+                }
+                
+                // Verificar que omega esté en el rango (0, 2)
+                if (options.omega <= 0 || options.omega >= 2) {
+                    showAlert('sor', 'error', 'El parámetro de relajación (omega) debe estar en el rango (0, 2).');
+                    return;
+                }
+                
+                // Copiar matriz y vector para no modificar los originales
+                let A = JSON.parse(JSON.stringify(matrix));
+                let b = [...vector];
+                
+                // Aplicar reordenamiento si está habilitado
+                if (options.reorder) {
+                    const reordered = reorderMatrix(A, b);
+                    A = reordered.matrix;
+                    b = reordered.vector;
+                    
+                    if (isDiagonallyDominant(A)) {
+                        showAlert('sor', 'info', 'La matriz ha sido reordenada para mejorar la convergencia.');
+                    }
+                }
+                
+                // Aplicar escalado si está habilitado
+                if (options.scale) {
+                    const scaled = scaleMatrix(A, b);
+                    A = scaled.matrix;
+                    b = scaled.vector;
+                    
+                    showAlert('sor', 'info', document.getElementById('sor-info').textContent + ' La matriz ha sido escalada para mejorar la convergencia.');
+                }
+                
+                // Inicializar vector solución
+                let x = [...initialVector];
+                
+                // Iteraciones
+                const iterations = [];
+                let converged = false;
+                let iter = 0;
+                
+                while (iter < options.maxIterations && !converged) {
+                    const xOld = [...x];
+                    
+                    // Calcular nueva aproximación
+                    for (let i = 0; i < size; i++) {
+                        let sum1 = 0; // Suma de términos con índices menores a i
+                        let sum2 = 0; // Suma de términos con índices mayores a i
+                        
+                        for (let j = 0; j < i; j++) {
+                            sum1 += A[i][j] * x[j];
+                        }
+                        
+                        for (let j = i + 1; j < size; j++) {
+                            sum2 += A[i][j] * xOld[j];
+                        }
+                        
+                        x[i] = (1 - options.omega) * xOld[i] + options.omega * (b[i] - sum1 - sum2) / A[i][i];
+                    }
+                    
+                    // Calcular error relativo
+                    let maxError = 0;
+                    for (let i = 0; i < size; i++) {
+                        const error = Math.abs(x[i] - xOld[i]) / (Math.abs(x[i]) || 1);
+                        maxError = Math.max(maxError, error);
+                    }
+                    
+                    // Guardar iteración
+                    iterations.push({
+                        iteration: iter + 1,
+                        x: [...x],
+                        error: maxError * 100 // Convertir a porcentaje
+                    });
+                    
+                    // Verificar convergencia
+                    if (maxError * 100 < options.tolerance) {
+                        converged = true;
+                    }
+                    
+                    iter++;
+                }
+                
+                // Mostrar resultados
+                showResults('sor', iterations);
+                showSolution('sor', x);
+                
+                // Mostrar mensaje si no convergió
+                if (!converged) {
+                    showAlert('sor', 'warning', 'El método no convergió en el número máximo de iteraciones.');
+                }
+            } catch (error) {
+                showAlert('sor', 'error', 'Error al resolver: ' + error.message);
+            }
+        }
+
+        // Operaciones con matrices
+        const matrixOperations = {
+            // Multiplicación de matriz por vector
+            multiplyMatrixVector: (A, v) => {
+                const n = A.length;
+                const result = Array(n).fill(0);
+                
+                for (let i = 0; i < n; i++) {
+                    for (let j = 0; j < n; j++) {
+                        result[i] += A[i][j] * v[j];
+                    }
+                }
+                
+                return result;
+            },
+            
+            // Producto punto de vectores
+            dotProduct: (a, b) => {
+                return a.reduce((sum, val, i) => sum + val * b[i], 0);
+            },
+            
+            // Resta de vectores
+            subtractVectors: (a, b) => {
+                return a.map((val, i) => val - b[i]);
+            },
+            
+            // Norma de un vector
+            vectorNorm: (v) => {
+                return Math.sqrt(v.reduce((sum, val) => sum + val * val, 0));
+            },
+            
+            // Multiplicación de vector por escalar
+            multiplyVectorScalar: (v, scalar) => {
+                return v.map(val => val * scalar);
+            },
+            
+            // Transpuesta de una matriz
+            transpose: (A) => {
+                const n = A.length;
+                const result = Array(n).fill().map(() => Array(n).fill(0));
+                
+                for (let i = 0; i < n; i++) {
+                    for (let j = 0; j < n; j++) {
+                        result[i][j] = A[j][i];
+                    }
+                }
+                
+                return result;
+            },
+            
+            // Multiplicación de matrices
+            multiplyMatrices: (A, B) => {
+                const n = A.length;
+                const result = Array(n).fill().map(() => Array(n).fill(0));
+                
+                for (let i = 0; i < n; i++) {
+                    for (let j = 0; j < n; j++) {
+                        for (let k = 0; k < n; k++) {
+                            result[i][j] += A[i][k] * B[k][j];
+                        }
+                    }
+                }
+                
+                return result;
+            }
+        };
+
+        // Método del Gradiente Conjugado
+        function solveConjugateGradient() {
+            try {
+                // Actualizar opciones
+                updateOptions('conjugate-gradient');
+                
+                // Limpiar alertas
+                clearAlerts('conjugate-gradient');
+                
+                const size = state.sizes['conjugate-gradient'];
+                const matrix = state.matrices['conjugate-gradient'];
+                const vector = state.vectors['conjugate-gradient'];
+                const initialVector = state.initialVectors['conjugate-gradient'];
+                const options = state.options['conjugate-gradient'];
+                
+                // Copiar matriz y vector para no modificar los originales
+                let A = JSON.parse(JSON.stringify(matrix));
+                let b = [...vector];
+                
+                // Verificar si la matriz es simétrica
+                let isSymmetric = true;
+                for (let i = 0; i < size && isSymmetric; i++) {
+                    for (let j = 0; j < size; j++) {
+                        if (Math.abs(A[i][j] - A[j][i]) > 1e-10) {
+                            isSymmetric = false;
+                            break;
+                        }
+                    }
+                }
+                
+                // Si la matriz no es simétrica y se ha seleccionado la opción useAtA,
+                // convertir a una matriz simétrica y definida positiva usando A^T * A
+                if (!isSymmetric && options.useAtA) {
+                    const AT = matrixOperations.transpose(A);
+                    const ATb = matrixOperations.multiplyMatrixVector(AT, b);
+                    A = matrixOperations.multiplyMatrices(AT, A);
+                    b = ATb;
+                    
+                    showAlert('conjugate-gradient', 'info', 'La matriz ha sido transformada a A^T*A para garantizar que sea simétrica y definida positiva.');
+                } else if (!isSymmetric) {
+                    showAlert('conjugate-gradient', 'warning', 'La matriz no es simétrica. La convergencia del método del Gradiente Conjugado no está garantizada.');
+                }
+                
+                // Inicializar vector solución
+                let x = [...initialVector];
+                
+                // Calcular residuo inicial r = b - A*x
+                let Ax = matrixOperations.multiplyMatrixVector(A, x);
+                let r = matrixOperations.subtractVectors(b, Ax);
+                let p = [...r];
+                let rDotR = matrixOperations.dotProduct(r, r);
+                
+                // Iteraciones
+                const iterations = [];
+                let converged = false;
+                let iter = 0;
+                
+                // Guardar iteración inicial
+                iterations.push({
+                    iteration: 0,
+                    x: [...x],
+                    error: Math.sqrt(rDotR) / Math.sqrt(matrixOperations.dotProduct(b, b)) * 100
+                });
+                
+                while (iter < options.maxIterations && !converged) {
+                    // Calcular Ap
+                    const Ap = matrixOperations.multiplyMatrixVector(A, p);
+                    
+                    // Calcular alpha = (r^T * r) / (p^T * A * p)
+                    const pDotAp = matrixOperations.dotProduct(p, Ap);
+                    if (Math.abs(pDotAp) < 1e-14) {
+                        showAlert('conjugate-gradient', 'warning', 'División por cero detectada. La matriz puede no ser definida positiva.');
+                        break;
+                    }
+                    
+                    const alpha = rDotR / pDotAp;
+                    
+                    // Actualizar x: x = x + alpha * p
+                    const alphaP = matrixOperations.multiplyVectorScalar(p, alpha);
+                    x = x.map((val, i) => val + alphaP[i]);
+                    
+                    // Actualizar r: r = r - alpha * A * p
+                    const alphaAp = matrixOperations.multiplyVectorScalar(Ap, alpha);
+                    r = r.map((val, i) => val - alphaAp[i]);
+                    
+                    // Calcular nuevo rDotR
+                    const rDotRNew = matrixOperations.dotProduct(r, r);
+                    
+                    // Calcular error relativo
+                    const error = Math.sqrt(rDotRNew) / Math.sqrt(matrixOperations.dotProduct(b, b)) * 100;
+                    
+                    // Guardar iteración
+                    iterations.push({
+                        iteration: iter + 1,
+                        x: [...x],
+                        error: error
+                    });
+                    
+                    // Verificar convergencia
+                    if (error < options.tolerance) {
+                        converged = true;
+                    }
+                    
+                    // Calcular beta = (r^T_new * r_new) / (r^T * r)
+                    const beta = rDotRNew / rDotR;
+                    
+                    // Actualizar p: p = r + beta * p
+                    p = r.map((val, i) => val + beta * p[i]);
+                    
+                    // Actualizar rDotR para la siguiente iteración
+                    rDotR = rDotRNew;
+                    
+                    iter++;
+                }
+                
+                // Mostrar resultados
+                showResults('conjugate-gradient', iterations);
+                showSolution('conjugate-gradient', x);
+                
+                // Mostrar mensaje si no convergió
+                if (!converged) {
+                    showAlert('conjugate-gradient', 'warning', 'El método no convergió en el número máximo de iteraciones.');
+                }
+            } catch (error) {
+                showAlert('conjugate-gradient', 'error', 'Error al resolver: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
